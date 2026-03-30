@@ -1,0 +1,131 @@
+/* Complemento mobile-first para a mesma tela do FE — cores alinhadas ao tema (#0d9488). */
+
+.garcom-restaurant-tables-page {
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+.garcom-restaurant-tables-main {
+  padding-bottom: 8px;
+}
+
+/* Shell: conteúdo das abas + mini menu fixo no rodapé (mobile) */
+.garcom-mobile-tabs-shell {
+  position: relative;
+}
+
+/* Barra de abas padrão oculta no mobile — substituída por .garcom-mini-menu-wrap */
+.garcom-tabs-mini-menu-mode .ant-tabs-nav {
+  display: none !important;
+}
+
+.garcom-tabs-mini-menu-mode.ant-tabs-top > .ant-tabs-content-holder {
+  padding-bottom: calc(72px + env(safe-area-inset-bottom, 12px));
+}
+
+/* Mini menu fixo: 4 atalhos em coluna (ícone + rótulo curto) */
+.garcom-mini-menu-wrap {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100;
+  padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px));
+  background: rgba(255, 255, 255, 0.94);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid #e2e8f0;
+  box-shadow: 0 -8px 32px rgba(15, 23, 42, 0.08);
+}
+
+.garcom-mini-menu {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 6px;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.garcom-mini-menu-item {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 8px 4px 6px;
+  border: none;
+  border-radius: 14px;
+  background: transparent;
+  color: #64748b;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.15s ease;
+}
+
+.garcom-mini-menu-item:active {
+  transform: scale(0.96);
+}
+
+.garcom-mini-menu-item-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  font-size: 20px;
+  line-height: 1;
+  color: inherit;
+}
+
+.garcom-mini-menu-item-label {
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  text-align: center;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.garcom-mini-menu-item--active {
+  background: linear-gradient(180deg, rgba(13, 148, 136, 0.12) 0%, rgba(13, 148, 136, 0.06) 100%);
+  color: #0d9488;
+}
+
+.garcom-mini-menu-item--active .garcom-mini-menu-item-icon {
+  color: #0d9488;
+}
+
+/* Mapa: cartões maiores para toque */
+@media (max-width: 767px) {
+  .garcom-restaurant-tables-page .restaurant-tables-map-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+  }
+
+  .garcom-restaurant-tables-page .restaurant-tables-map-card {
+    min-height: 96px;
+    border-radius: 16px;
+  }
+
+  .garcom-restaurant-tables-page .restaurant-tables-map-card-name {
+    font-size: 1rem;
+  }
+
+  .garcom-restaurant-tables-page .restaurant-tables-header-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .garcom-restaurant-tables-page .restaurant-tables-container {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+}

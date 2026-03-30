@@ -1,13 +1,244 @@
-body {
+* {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+body {
+  font-family: 'Urbanist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: #f8fafc;
+}
+
+.ant-select-item-option-active:not(.ant-select-item-option-disabled) {
+  background-color: #e8ecf2 !important;
+}
+
+/* Filtros colapsáveis (grid 0fr / 1fr) — mesmo comportamento do VendaLume FE */
+:root {
+  --vl-filters-motion-ease: cubic-bezier(0.33, 1, 0.68, 1);
+  --vl-filters-motion-duration: 0.4s;
+}
+
+.vl-filters-toggle {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 0;
+}
+
+.vl-filters-toggle-btn.ant-btn {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 8px;
+  color: #0f172a !important;
+  border-color: #e2e8f0 !important;
+  border-radius: 12px !important;
+  font-weight: 600;
+  transition:
+    color 0.24s var(--vl-filters-motion-ease),
+    border-color 0.24s var(--vl-filters-motion-ease),
+    background 0.24s var(--vl-filters-motion-ease),
+    transform 0.2s var(--vl-filters-motion-ease),
+    box-shadow 0.24s var(--vl-filters-motion-ease) !important;
+}
+
+.vl-filters-toggle-btn.ant-btn:hover {
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+  background: #f8fafc !important;
+}
+
+.vl-filters-toggle-btn.ant-btn:active {
+  transform: scale(0.98);
+}
+
+.vl-filters-toggle-label {
+  flex: 0 1 auto;
+}
+
+.vl-filters-chevron {
+  font-size: 11px;
+  opacity: 0.55;
+  transition:
+    transform var(--vl-filters-motion-duration) var(--vl-filters-motion-ease),
+    opacity 0.22s ease;
+}
+
+.vl-filters-toggle-btn--open .vl-filters-chevron {
+  transform: rotate(180deg);
+  opacity: 0.9;
+}
+
+.vl-filters-expand {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--vl-filters-motion-duration) var(--vl-filters-motion-ease);
+}
+
+.vl-filters-expand--open {
+  grid-template-rows: 1fr;
+}
+
+.vl-filters-expand-inner {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.vl-filters-row {
+  margin-top: 16px;
+  padding-top: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --vl-filters-motion-duration: 0.01ms;
+  }
+
+  .vl-filters-expand,
+  .vl-filters-toggle-btn.ant-btn,
+  .vl-filters-chevron {
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.garcom-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.garcom-layout-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 12px 16px;
+  background: #fff;
+  border-bottom: 1px solid #e2e8f0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 1px 0 rgba(15, 23, 42, 0.06);
+}
+
+.garcom-layout-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.garcom-layout-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%);
+  color: #fff;
+  font-weight: 800;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.garcom-layout-title {
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: #0f172a;
+  line-height: 1.2;
+}
+
+.garcom-layout-sub {
+  font-size: 12px !important;
+  display: block;
+  margin-top: 2px !important;
+}
+
+.garcom-layout-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.garcom-layout-user-name {
+  font-size: 13px;
+  color: #64748b;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 480px) {
+  .garcom-layout-user-name {
+    display: none;
+  }
+}
+
+.garcom-layout-body {
+  flex: 1;
+  min-height: 0;
+}
+
+/* Login */
+.garcom-login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px 32px;
+  background: linear-gradient(165deg, #ecfdf5 0%, #f8fafc 40%, #ffffff 100%);
+}
+
+.garcom-login-inner {
+  width: 100%;
+  max-width: 420px;
+}
+
+.garcom-login-hero {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.garcom-login-icon-wrap {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 16px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(13, 148, 136, 0.15) 0%, rgba(20, 184, 166, 0.12) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.garcom-login-icon {
+  font-size: 32px;
+  color: #0d9488;
+}
+
+.garcom-login-title.ant-typography {
+  margin-bottom: 8px !important;
+  color: #0f172a !important;
+}
+
+.garcom-login-desc {
+  margin-bottom: 0 !important;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.garcom-login-card {
+  border-radius: 20px !important;
+  box-shadow: 0 12px 40px rgba(15, 23, 42, 0.08) !important;
+}
+
+.garcom-input-icon {
+  color: #94a3b8;
 }
