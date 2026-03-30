@@ -1,4 +1,6 @@
-const API_BASE = process.env.REACT_APP_API_URL || '/api'
+import { API_BASE_URL } from '../config/env'
+
+const API_BASE = API_BASE_URL
 
 const defaultOptions = {
   credentials: 'include',
