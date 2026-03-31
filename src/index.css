@@ -231,7 +231,6 @@ body {
   align-items: center;
   justify-content: center;
   padding: 24px 16px 32px;
-  background: linear-gradient(165deg, #ecfdf5 0%, #f8fafc 40%, #ffffff 100%);
 }
 
 .garcom-login-inner {
