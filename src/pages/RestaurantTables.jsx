@@ -368,6 +368,26 @@ export default function RestaurantTables() {
     }
   }, [effectiveTenantId, isRoot, filters.tableSectionId, filters.tableStatus, filters.tableActive, filters.tableSearch])
 
+  /**
+   * Reservas precisam listar mesas mesmo quando filtros da aba "Mesas" estão ativos.
+   * Então aqui carregamos a lista completa (sem section/status/search), só por tenant.
+   */
+  const loadTablesForReservations = useCallback(async () => {
+    if (isRoot && !effectiveTenantId) return
+    setLoading(true)
+    try {
+      const filter = { page: 0, size: 500, sortBy: 'name', sortDirection: 'asc' }
+      if (effectiveTenantId) filter.tenantId = effectiveTenantId
+      const res = await restaurantTablesService.searchTables(filter)
+      setTables(res?.content ?? [])
+    } catch (e) {
+      message.error(e?.message || 'Erro ao carregar mesas.')
+      setTables([])
+    } finally {
+      setLoading(false)
+    }
+  }, [effectiveTenantId, isRoot])
+
   const loadReservationsForMap = useCallback(async () => {
     if (isRoot && !effectiveTenantId) return
     try {
@@ -425,15 +445,33 @@ export default function RestaurantTables() {
 
   useEffect(() => {
     if (activeTab === 'sections') {
-
-    } else if (activeTab === 'map') {
+      loadSections(false)
+      return
+    }
+    if (activeTab === 'map') {
       loadSections(false)
       loadTables()
       loadOpenOrders()
       loadReservationsForMap()
+      return
     }
-
-  }, [activeTab, loadSections, loadTables, loadOpenOrders, loadReservationsForMap])
+    if (activeTab === 'tables') {
+      loadTables()
+      return
+    }
+    if (activeTab === 'reservations') {
+      loadTablesForReservations()
+      loadReservations()
+    }
+  }, [
+    activeTab,
+    loadSections,
+    loadTables,
+    loadTablesForReservations,
+    loadOpenOrders,
+    loadReservations,
+    loadReservationsForMap,
+  ])
 
   const openSectionDrawer = (section = null) => {
     setEditingSectionId(section?.id ?? null)
