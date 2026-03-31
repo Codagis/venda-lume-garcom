@@ -327,11 +327,13 @@
   font-weight: 700;
   color: #0f172a;
   letter-spacing: -0.01em;
+  margin-left: 20px;
 }
 
 .restaurant-tables-order-item-desc {
   color: #64748b;
   font-size: 12px;
+  margin-left: 20px;
 }
 
 .restaurant-tables-order-item-total {
