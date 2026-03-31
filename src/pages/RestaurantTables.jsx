@@ -103,6 +103,13 @@ function CloseOrderPayNowForm({ form, currentOrder, tenantConfig, cardMachines, 
   const installmentsCount = Form.useWatch('installmentsCount', form) ?? 1
   const cardMachineId = Form.useWatch('cardMachineId', form)
 
+  const tenantMaxInstallmentsRaw = tenantConfig?.maxInstallments
+  const tenantMaxInstallments = (() => {
+    const n = Number(tenantMaxInstallmentsRaw)
+    if (!Number.isFinite(n) || n <= 0) return 12
+    return Math.floor(n)
+  })()
+
   const subtotal = (currentOrder?.items || []).reduce((s, i) => s + (Number(i.quantity) || 0) * (Number(i.unitPrice) || 0), 0)
   const saleDiscount = discountType === 'percent' ? subtotal * (Number(discountPercent) || 0) / 100 : (Number(discountAmount) || 0)
   const total = Math.max(0, subtotal - saleDiscount)
@@ -207,7 +214,7 @@ function CloseOrderPayNowForm({ form, currentOrder, tenantConfig, cardMachines, 
             <>
               <Form.Item name="installmentsCount" label="Parcelas">
                 <Select
-                  options={Array.from({ length: Math.max(1, tenantConfig?.maxInstallments || 12) }, (_, i) => i + 1).map((n) => {
+                  options={Array.from({ length: Math.max(1, tenantMaxInstallments) }, (_, i) => i + 1).map((n) => {
                     const maxNo = tenantConfig?.maxInstallmentsNoInterest ?? 1
                     const rate = Number(tenantConfig?.interestRatePercent) || 0
                     let tw = total
