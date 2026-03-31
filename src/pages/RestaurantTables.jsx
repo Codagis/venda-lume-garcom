@@ -712,9 +712,12 @@ export default function RestaurantTables() {
   }
 
   const handleUpdateQuantity = async (itemId, quantity) => {
-    if (quantity <= 0) return handleRemoveItem(itemId)
+    if (quantity == null) return
+    const q = Number(quantity)
+    if (!Number.isFinite(q)) return
+    if (q <= 0) return handleRemoveItem(itemId)
     try {
-      await tableOrdersService.updateOrderItemQuantity(itemId, quantity)
+      await tableOrdersService.updateOrderItemQuantity(itemId, q)
       await refreshCurrentOrder()
     } catch (e) {
       message.error(e?.message || 'Erro ao atualizar.')
@@ -1730,9 +1733,11 @@ export default function RestaurantTables() {
             <Divider>Itens da comanda</Divider>
             {currentOrder?.items?.length ? (
               <List
+                className="restaurant-tables-order-items"
                 dataSource={currentOrder.items}
                 renderItem={(item) => (
                   <List.Item
+                    className="restaurant-tables-order-item"
                     actions={[
                       <InputNumber
                         key="qty"
@@ -1759,10 +1764,10 @@ export default function RestaurantTables() {
                     ]}
                   >
                     <List.Item.Meta
-                      title={`${item.productName} x ${item.quantity}`}
-                      description={formatPrice(item.unitPrice) + ' un'}
+                      title={<span className="restaurant-tables-order-item-title">{item.productName}</span>}
+                      description={<span className="restaurant-tables-order-item-desc">{formatPrice(item.unitPrice)} un</span>}
                     />
-                    <span>{formatPrice(item.total)}</span>
+                    <span className="restaurant-tables-order-item-total">{formatPrice(item.total)}</span>
                   </List.Item>
                 )}
               />

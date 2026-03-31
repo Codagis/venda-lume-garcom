@@ -1,4 +1,5 @@
 import { Modal } from 'antd'
+import { getModalInstance } from './modalBridge'
 
 export function confirmDeleteModal({
   title,
@@ -7,7 +8,9 @@ export function confirmDeleteModal({
   cancelText = 'Cancelar',
   onOk,
 }) {
-  Modal.confirm({
+  const modal = getModalInstance()
+  const confirm = modal?.confirm ? modal.confirm : Modal.confirm
+  confirm({
     title,
     content: description,
     okText,
@@ -20,14 +23,17 @@ export function confirmDeleteModal({
 }
 
 export function confirmLogoutModal({ onOk }) {
-  Modal.confirm({
+  const modal = getModalInstance()
+  const confirm = modal?.confirm ? modal.confirm : Modal.confirm
+  confirm({
     title: 'Sair do app Garçom?',
     content: 'Você precisará entrar novamente para acessar as mesas.',
     okText: 'Sair',
     okType: 'danger',
     cancelText: 'Cancelar',
     centered: true,
-    maskClosable: true,
+    maskClosable: false,
+    keyboard: false,
     onOk,
   })
 }

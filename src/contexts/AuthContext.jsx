@@ -71,11 +71,18 @@ export function AuthProvider({ children }) {
   }, [])
 
   const logout = useCallback(async () => {
-    try {
-      await logoutApi()
-    } catch (_) {}
+    // Derruba sessão local imediatamente (mesmo se a API travar/offline).
     setUser(null)
     setIsAuthenticated(false)
+    try {
+      const timeoutMs = 4000
+      await Promise.race([
+        logoutApi(),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), timeoutMs)),
+      ])
+    } catch (_) {}
+    // A navegação para /login fica por conta do caller (ex.: layout),
+    // evitando problemas quando o app está publicado com base path.
   }, [])
 
   const value = {

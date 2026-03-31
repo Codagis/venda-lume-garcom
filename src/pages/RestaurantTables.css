@@ -304,3 +304,53 @@
   font-size: 18px;
   color: #1d2939;
 }
+
+/* Itens da comanda (List) */
+.restaurant-tables-order-items {
+  background: transparent;
+}
+
+.restaurant-tables-order-item {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 12px 12px;
+  margin-bottom: 10px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.restaurant-tables-order-item .ant-list-item-meta {
+  align-items: center;
+}
+
+.restaurant-tables-order-item-title {
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+}
+
+.restaurant-tables-order-item-desc {
+  color: #64748b;
+  font-size: 12px;
+}
+
+.restaurant-tables-order-item-total {
+  font-weight: 800;
+  color: #0f172a;
+  white-space: nowrap;
+  margin-left: 10px;
+}
+
+@media (max-width: 767px) {
+  .restaurant-tables-order-item .ant-list-item-action {
+    margin-inline-start: 8px;
+  }
+
+  .restaurant-tables-order-item .ant-list-item-action > li {
+    padding: 0 2px;
+  }
+
+  .restaurant-tables-order-item .ant-input-number {
+    border-radius: 10px;
+  }
+}

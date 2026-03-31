@@ -1,9 +1,11 @@
+import '@ant-design/v5-patch-for-react-19'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
-import { ConfigProvider } from 'antd'
+import { App as AntdApp, ConfigProvider } from 'antd'
 import ptBR from 'antd/locale/pt_BR'
 import { AuthProvider } from './contexts/AuthContext'
+import AntdAppBridge from './components/AntdAppBridge'
 import App from './App'
 import 'antd/dist/reset.css'
 import './index.css'
@@ -69,9 +71,13 @@ root.render(
   <React.StrictMode>
     <BrowserRouter>
       <ConfigProvider locale={ptBR} theme={theme}>
-        <AuthProvider>
-          <App />
-        </AuthProvider>
+        <AntdApp>
+          <AntdAppBridge>
+            <AuthProvider>
+              <App />
+            </AuthProvider>
+          </AntdAppBridge>
+        </AntdApp>
       </ConfigProvider>
     </BrowserRouter>
   </React.StrictMode>,

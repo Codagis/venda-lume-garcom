@@ -56,7 +56,8 @@ export async function logoutApi() {
 }
 
 function clearAuthAndRedirect() {
-  window.location.href = '/login'
+  const base = (typeof process !== 'undefined' && process.env && process.env.PUBLIC_URL) ? process.env.PUBLIC_URL : ''
+  window.location.href = `${base}/login`
 }
 
 async function handleUnauthorized(res, path, opts) {

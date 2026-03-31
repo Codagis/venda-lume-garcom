@@ -2,15 +2,23 @@ import { Button, Typography } from 'antd'
 import { LogoutOutlined, UserOutlined } from '@ant-design/icons'
 import { useAuth } from '../contexts/AuthContext'
 import { confirmLogoutModal } from '../utils/confirmModal'
+import { useNavigate } from 'react-router-dom'
 
 const { Text } = Typography
 
 export default function GarcomLayout({ children }) {
   const { user, logout } = useAuth()
+  const navigate = useNavigate()
+
+  const loginPath = `${process.env.PUBLIC_URL || ''}/login`
 
   const handleLogout = () => {
+    console.log('handleLogout')
     confirmLogoutModal({
-      onOk: () => logout(),
+      onOk: () => {
+        logout()
+        navigate('/login', { replace: true })
+      },
     })
   }
 
