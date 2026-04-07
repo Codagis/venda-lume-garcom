@@ -1,4 +1,4 @@
-.restaurant-tables-page {
+﻿.restaurant-tables-page {
   min-height: 100vh;
 }
 
@@ -305,7 +305,6 @@
   color: #1d2939;
 }
 
-/* Itens da comanda (List) */
 .restaurant-tables-order-items {
   background: transparent;
 }

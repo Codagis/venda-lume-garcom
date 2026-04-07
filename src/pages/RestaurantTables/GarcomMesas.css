@@ -1,4 +1,4 @@
-/* Complemento mobile-first para a mesma tela do FE — cores alinhadas ao tema (#0d9488). */
+﻿
 
 .garcom-restaurant-tables-page {
   padding-bottom: env(safe-area-inset-bottom, 0);
@@ -8,12 +8,12 @@
   padding-bottom: 8px;
 }
 
-/* Shell: conteúdo das abas + mini menu fixo no rodapé (mobile) */
+
 .garcom-mobile-tabs-shell {
   position: relative;
 }
 
-/* Barra de abas padrão oculta no mobile — substituída por .garcom-mini-menu-wrap */
+
 .garcom-tabs-mini-menu-mode .ant-tabs-nav {
   display: none !important;
 }
@@ -22,7 +22,7 @@
   padding-bottom: calc(72px + env(safe-area-inset-bottom, 12px));
 }
 
-/* Mini menu fixo: 4 atalhos em coluna (ícone + rótulo curto) */
+
 .garcom-mini-menu-wrap {
   position: fixed;
   left: 0;
@@ -103,7 +103,7 @@
   color: #0d9488;
 }
 
-/* Mapa: cartões maiores para toque */
+
 @media (max-width: 767px) {
   .garcom-restaurant-tables-page .restaurant-tables-map-grid {
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));

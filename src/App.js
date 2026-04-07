@@ -2,8 +2,8 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import { PublicRoute } from './components/PublicRoute'
 import GarcomLayout from './components/GarcomLayout'
-import Login from './pages/Login'
-import RestaurantTables from './pages/RestaurantTables'
+import Login from './pages/Login/Login'
+import RestaurantTables from './pages/RestaurantTables/RestaurantTables'
 
 export default function App() {
   return (

@@ -42,16 +42,16 @@ import {
   PrinterOutlined,
 } from '@ant-design/icons'
 import dayjs from 'dayjs'
-import { useAuth } from '../contexts/AuthContext'
-import * as restaurantTablesService from '../services/restaurantTablesService'
-import * as tenantService from '../services/tenantService'
-import * as tableOrdersService from '../services/tableOrdersService'
-import { searchProducts } from '../services/productService'
-import { PAYMENT_METHOD_OPTIONS_PDV } from '../services/salesService'
-import * as cardMachineService from '../services/cardMachineService'
-import { confirmDeleteModal } from '../utils/confirmModal'
-import { normalizePhone } from '../utils/masks'
-import { antdRuleEmail } from '../utils/validators'
+import { useAuth } from '../../contexts/AuthContext'
+import * as restaurantTablesService from '../../services/restaurantTablesService'
+import * as tenantService from '../../services/tenantService'
+import * as tableOrdersService from '../../services/tableOrdersService'
+import { searchProducts } from '../../services/productService'
+import { PAYMENT_METHOD_OPTIONS_PDV } from '../../services/salesService'
+import * as cardMachineService from '../../services/cardMachineService'
+import { confirmDeleteModal } from '../../utils/confirmModal'
+import { normalizePhone } from '../../utils/masks'
+import { antdRuleEmail } from '../../utils/validators'
 import './RestaurantTables.css'
 import './GarcomMesas.css'
 
@@ -82,7 +82,6 @@ const RESERVATION_STATUS_OPTIONS = [
   { value: 'NO_SHOW', label: 'Não compareceu', color: 'default' },
 ]
 
-/** Navegação mobile: mini menus (ícone + título), fora da barra padrão do Ant Tabs */
 const GARCOM_MOBILE_TABS = [
   { key: 'sections', title: 'Seções', Icon: TeamOutlined },
   { key: 'map', title: 'Mapa', Icon: DashboardOutlined },
@@ -103,36 +102,55 @@ function CloseOrderPayNowForm({ form, currentOrder, tenantConfig, cardMachines, 
   const installmentsCount = Form.useWatch('installmentsCount', form) ?? 1
   const cardMachineId = Form.useWatch('cardMachineId', form)
 
-  const tenantMaxInstallmentsRaw = tenantConfig?.maxInstallments
-  const tenantMaxInstallments = (() => {
-    const n = Number(tenantMaxInstallmentsRaw)
-    if (!Number.isFinite(n) || n <= 0) return 12
-    return Math.floor(n)
-  })()
-
   const subtotal = (currentOrder?.items || []).reduce((s, i) => s + (Number(i.quantity) || 0) * (Number(i.unitPrice) || 0), 0)
   const saleDiscount = discountType === 'percent' ? subtotal * (Number(discountPercent) || 0) / 100 : (Number(discountAmount) || 0)
   const total = Math.max(0, subtotal - saleDiscount)
   const selectedCardMachine = cardMachineId ? (cardMachines || []).find((m) => m.id === cardMachineId) : null
-  const maxNoInterest = tenantConfig?.maxInstallmentsNoInterest ?? 1
-  const interestPercent = Number(tenantConfig?.interestRatePercent) || 0
+
+  const effectiveMaxInstallments = selectedCardMachine?.maxInstallments ?? tenantConfig?.maxInstallments ?? 12
+  const effectiveMaxInstallmentsNoInterest = selectedCardMachine?.maxInstallmentsNoInterest ?? tenantConfig?.maxInstallmentsNoInterest ?? 1
+  const effectiveInterestRatePercent = selectedCardMachine?.interestRatePercent != null
+    ? Number(selectedCardMachine.interestRatePercent)
+    : (Number(tenantConfig?.interestRatePercent) || 0)
+  const roundMoney = (v) => {
+    const n = Number(v)
+    if (!Number.isFinite(n)) return 0
+    return Math.round((n + Number.EPSILON) * 100) / 100
+  }
+
   const installmentsCalc = paymentMethod === 'CREDIT_CARD' && installmentsCount > 0 ? (() => {
-    const n = installmentsCount
+    const maxNoInterest = effectiveMaxInstallmentsNoInterest
+    const interestPercent = effectiveInterestRatePercent
+    const n = Math.min(installmentsCount, Number(effectiveMaxInstallments) || 12)
+    const hasInterest = n > maxNoInterest && interestPercent > 0
+    const i = hasInterest ? (interestPercent / 100) : 0
+
     let totalWithInterest = total
-    if (n > maxNoInterest && interestPercent > 0) {
-      const i = interestPercent / 100
-      const periodosComJuros = n - maxNoInterest
-      totalWithInterest = total * Math.pow(1 + i, periodosComJuros)
+    let installmentValue = total / n
+    if (i > 0) {
+      const pow = Math.pow(1 + i, n)
+      installmentValue = total * (i * pow) / (pow - 1)
+      installmentValue = roundMoney(installmentValue)
+      totalWithInterest = roundMoney(installmentValue * n)
+    } else {
+      installmentValue = roundMoney(installmentValue)
+      totalWithInterest = roundMoney(totalWithInterest)
     }
     let cardFee = 0
     const feeType = selectedCardMachine?.feeType ?? tenantConfig?.cardFeeType
     const feeValue = selectedCardMachine?.feeValue ?? tenantConfig?.cardFeeValue
-    if (feeType === 'PERCENTAGE' && feeValue != null) cardFee = totalWithInterest * (Number(feeValue) / 100)
-    else if (feeType === 'FIXED_AMOUNT' && feeValue != null) cardFee = Number(feeValue)
-    return { totalWithInterest, installmentValue: totalWithInterest / n, cardFee }
+    if (feeType === 'PERCENTAGE' && feeValue != null) cardFee = roundMoney(totalWithInterest * (Number(feeValue) / 100))
+    else if (feeType === 'FIXED_AMOUNT' && feeValue != null) cardFee = roundMoney(Number(feeValue))
+    return { totalWithInterest, installmentValue, cardFee }
   })() : null
   const totalAPagar = installmentsCalc ? installmentsCalc.totalWithInterest + (installmentsCalc.cardFee || 0) : total
   const amountReceived = Form.useWatch('amountReceived', form)
+
+  useEffect(() => {
+    if (paymentMethod === 'CREDIT_CARD' && installmentsCount > effectiveMaxInstallments) {
+      form.setFieldValue('installmentsCount', Math.max(1, Number(effectiveMaxInstallments) || 1))
+    }
+  }, [paymentMethod, installmentsCount, effectiveMaxInstallments, form])
 
   return (
     <Form form={form} layout="vertical" onFinish={onFinish} initialValues={{ paymentMethod: 'PIX', discountType: 'amount', discountAmount: 0, discountPercent: 0, installmentsCount: 1, cardBrand: '99' }}>
@@ -214,9 +232,9 @@ function CloseOrderPayNowForm({ form, currentOrder, tenantConfig, cardMachines, 
             <>
               <Form.Item name="installmentsCount" label="Parcelas">
                 <Select
-                  options={Array.from({ length: Math.max(1, tenantMaxInstallments) }, (_, i) => i + 1).map((n) => {
-                    const maxNo = tenantConfig?.maxInstallmentsNoInterest ?? 1
-                    const rate = Number(tenantConfig?.interestRatePercent) || 0
+                  options={Array.from({ length: Math.max(1, Number(effectiveMaxInstallments) || 12) }, (_, i) => i + 1).map((n) => {
+                    const maxNo = effectiveMaxInstallmentsNoInterest
+                    const rate = effectiveInterestRatePercent
                     let tw = total
                     if (n > maxNo && rate > 0) tw = total * Math.pow(1 + rate / 100, n - maxNo)
                     return { value: n, label: n <= maxNo ? `${n}x sem juros` : `${n}x de ${formatPrice(tw / n)}` }
@@ -375,10 +393,6 @@ export default function RestaurantTables() {
     }
   }, [effectiveTenantId, isRoot, filters.tableSectionId, filters.tableStatus, filters.tableActive, filters.tableSearch])
 
-  /**
-   * Reservas precisam listar mesas mesmo quando filtros da aba "Mesas" estão ativos.
-   * Então aqui carregamos a lista completa (sem section/status/search), só por tenant.
-   */
   const loadTablesForReservations = useCallback(async () => {
     if (isRoot && !effectiveTenantId) return
     setLoading(true)
@@ -923,11 +937,23 @@ export default function RestaurantTables() {
     }).catch(() => setCloseOrderTenantConfig({ maxInstallments: 12, maxInstallmentsNoInterest: 1, interestRatePercent: 0, cardFeeType: null, cardFeeValue: null }))
     const tid = effectiveTenantId
     if (tid) {
-      cardMachineService.listByTenant(tid).then((data) => setCloseOrderCardMachines(data || [])).catch(() => setCloseOrderCardMachines([]))
+      cardMachineService.listActiveByTenant(tid).then((data) => {
+        const list = data || []
+        setCloseOrderCardMachines(list)
+        const defaultM = list.find((m) => m.isDefault)
+        const nextId = defaultM?.id ?? (list?.[0]?.id ?? null)
+        if (!formCloseOrder.getFieldValue('cardMachineId') && nextId) formCloseOrder.setFieldValue('cardMachineId', nextId)
+      }).catch(() => setCloseOrderCardMachines([]))
     } else {
-      cardMachineService.listCurrent().then((data) => setCloseOrderCardMachines(data || [])).catch(() => setCloseOrderCardMachines([]))
+      cardMachineService.listCurrentActive().then((data) => {
+        const list = data || []
+        setCloseOrderCardMachines(list)
+        const defaultM = list.find((m) => m.isDefault)
+        const nextId = defaultM?.id ?? (list?.[0]?.id ?? null)
+        if (!formCloseOrder.getFieldValue('cardMachineId') && nextId) formCloseOrder.setFieldValue('cardMachineId', nextId)
+      }).catch(() => setCloseOrderCardMachines([]))
     }
-  }, [closeOrderVisible, effectiveTenantId, isRoot])
+  }, [closeOrderVisible, effectiveTenantId, isRoot, formCloseOrder])
 
   const formatPrice = (v) => (v != null ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v) : 'R$ 0,00')
 
@@ -1653,7 +1679,7 @@ export default function RestaurantTables() {
       <Drawer
         title={
           currentOrder
-            ? `Comanda - Mesa ${currentOrder?.tableName || '-'}`
+            ? `Comanda - ${currentOrder?.tableName || '-'}`
             : selectedTable
               ? `Mesa ${selectedTable.name}`
               : 'Comanda'
