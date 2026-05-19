@@ -16,10 +16,10 @@
   align-items: flex-start;
   gap: 20px;
   padding: 28px 32px;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
   background: #ffffff;
   border: 1px solid #e4e7ec;
-  border-radius: 10px;
+  border-radius: 12px;
   box-shadow: 0 1px 3px rgba(52, 73, 94, 0.06);
 }
 
@@ -30,10 +30,10 @@
   width: 52px;
   height: 52px;
   min-width: 52px;
-  background: linear-gradient(135deg, rgba(52, 73, 94, 0.08) 0%, rgba(52, 73, 94, 0.04) 100%);
-  border: 1px solid rgba(52, 73, 94, 0.12);
+  background: linear-gradient(135deg, rgba(26, 74, 47, 0.1) 0%, rgba(26, 74, 47, 0.04) 100%);
+  border: 1px solid rgba(26, 74, 47, 0.16);
   border-radius: 10px;
-  color: #34495e;
+  color: #1a4a2f;
   font-size: 22px;
 }
 
@@ -44,7 +44,7 @@
 
 .restaurant-tables-title {
   font-size: 22px;
-  font-weight: 600;
+  font-weight: var(--vl-font-weight-bold);
   color: #1d2939;
   letter-spacing: -0.4px;
   line-height: 1.3;
@@ -124,75 +124,313 @@
 }
 
 .restaurant-tables-map-container {
-  background: #f8fafc;
-  border: 1px solid #e4e7ec;
-  border-radius: 12px;
-  padding: 24px;
+  background-color: #e8ecef;
+  background-image:
+    linear-gradient(rgba(26, 74, 47, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(26, 74, 47, 0.05) 1px, transparent 1px);
+  background-size: 28px 28px;
+  border: 1px solid #d0d5dd;
+  border-radius: 16px;
+  padding: 20px;
   min-height: 400px;
 }
 
-.restaurant-tables-map-loading {
+.restaurant-tables-map-loading,
+.restaurant-tables-map-empty {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 360px;
+  min-height: 280px;
   color: #667085;
+  font-size: 15px;
+  text-align: center;
+  padding: 24px;
+}
+
+.restaurant-tables-map-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 20px;
+  margin-bottom: 20px;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid #e4e7ec;
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.05);
+}
+
+.restaurant-tables-map-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: var(--vl-font-weight-regular);
+  color: #475467;
+}
+
+.restaurant-tables-map-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.08);
+}
+
+.restaurant-tables-map-legend-dot--available {
+  background: #94a3b8;
+}
+
+.restaurant-tables-map-legend-dot--occupied {
+  background: #f59e0b;
+}
+
+.restaurant-tables-map-legend-dot--reserved {
+  background: #3b82f6;
+}
+
+.restaurant-tables-map-zone {
+  margin-bottom: 24px;
+}
+
+.restaurant-tables-map-zone:last-child {
+  margin-bottom: 0;
+}
+
+.restaurant-tables-map-zone-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+  padding: 0 4px;
+}
+
+.restaurant-tables-map-zone-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: var(--vl-font-weight-bold);
+  color: #1d2939;
+  letter-spacing: -0.02em;
+}
+
+.restaurant-tables-map-zone-count {
+  font-size: 12px;
+  font-weight: var(--vl-font-weight-regular);
+  color: #667085;
+  white-space: nowrap;
 }
 
 .restaurant-tables-map-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(156px, 1fr));
+  gap: 14px;
   align-content: start;
 }
 
-.restaurant-tables-map-card {
-  background: #fff;
-  border: 2px solid #e4e7ec;
-  border-radius: 12px;
-  padding: 16px;
-  cursor: pointer;
-  transition: all 0.2s;
-  min-height: 100px;
-}
-
-.restaurant-tables-map-card:hover {
-  border-color: #34495e;
-  box-shadow: 0 4px 12px rgba(52, 73, 94, 0.12);
-}
-
-.restaurant-tables-map-card.occupied {
-  border-color: #fa8c16;
-  background: linear-gradient(135deg, #fffbf5 0%, #fff7e6 100%);
-}
-
-.restaurant-tables-map-card.reserved {
-  border-color: #1890ff;
-  background: linear-gradient(135deg, #e6f4ff 0%, #bae0ff 100%);
-}
-
-.restaurant-tables-map-card.occupied.reserved {
-  border-color: #fa8c16;
-  background: linear-gradient(135deg, #fffbf5 0%, #fff7e6 100%);
-}
-
-.restaurant-tables-map-card-inner {
+.restaurant-tables-map-seat {
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 4px;
   align-items: center;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  padding: 12px 10px 10px;
+  border: 2px solid #d0d5dd;
+  border-radius: 14px;
+  background: #ffffff;
+  cursor: pointer;
   text-align: center;
+  font-family: inherit;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+  overflow: hidden;
+  box-sizing: border-box;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.restaurant-tables-map-card-name {
-  font-weight: 600;
-  font-size: 16px;
+.restaurant-tables-map-seat:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.1);
+}
+
+.restaurant-tables-map-seat:active {
+  transform: translateY(0);
+}
+
+.restaurant-tables-map-seat--available {
+  border-color: #d0d5dd;
+}
+
+.restaurant-tables-map-seat--occupied {
+  border-color: #f59e0b;
+  background: linear-gradient(180deg, #fffbf5 0%, #fff7ed 100%);
+  box-shadow: 0 2px 12px rgba(245, 158, 11, 0.14);
+}
+
+.restaurant-tables-map-seat--reserved {
+  border-color: #3b82f6;
+  background: linear-gradient(180deg, #f5f9ff 0%, #eff6ff 100%);
+  box-shadow: 0 2px 12px rgba(59, 130, 246, 0.12);
+}
+
+.restaurant-tables-map-seat-status-dot {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.1);
+}
+
+.restaurant-tables-map-seat-status-dot--available {
+  background: #94a3b8;
+}
+
+.restaurant-tables-map-seat-status-dot--occupied {
+  background: #f59e0b;
+}
+
+.restaurant-tables-map-seat-status-dot--reserved {
+  background: #3b82f6;
+}
+
+.restaurant-tables-map-seat-visual {
+  display: block;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.restaurant-tables-map-seat-surface {
+  display: block;
+  width: 52px;
+  height: 34px;
+  margin: 0 auto;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #eef1ef 0%, #dce3df 100%);
+  border: 2px solid #b8c4be;
+  box-shadow:
+    inset 0 2px 4px rgba(255, 255, 255, 0.65),
+    0 2px 0 rgba(15, 23, 42, 0.06);
+}
+
+.restaurant-tables-map-seat--occupied .restaurant-tables-map-seat-surface {
+  border-color: #d97706;
+  background: linear-gradient(180deg, #fde8c8 0%, #f5d0a0 100%);
+}
+
+.restaurant-tables-map-seat--reserved .restaurant-tables-map-seat-surface {
+  border-color: #60a5fa;
+  background: linear-gradient(180deg, #dbeafe 0%, #bfdbfe 100%);
+}
+
+.restaurant-tables-map-seat-name {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  font-size: 15px;
+  font-weight: var(--vl-font-weight-bold);
   color: #1d2939;
+  line-height: 1.25;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.restaurant-tables-map-card-capacity {
-  font-size: 12px;
+.restaurant-tables-map-seat-meta {
+  display: block;
+  width: 100%;
+  margin-top: 2px;
+  font-size: 11px;
+  font-weight: var(--vl-font-weight-regular);
   color: #667085;
+  line-height: 1.3;
+}
+
+.restaurant-tables-map-seat-order {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: nowrap;
+  gap: 4px;
+  width: 100%;
+  max-width: 100%;
+  margin-top: 8px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: rgba(245, 158, 11, 0.14);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.restaurant-tables-map-seat-order-icon {
+  flex-shrink: 0;
+  font-size: 12px;
+  color: #b45309;
+}
+
+.restaurant-tables-map-seat-order-count {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 11px;
+  font-weight: var(--vl-font-weight-bold);
+  color: #b45309;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
+}
+
+.restaurant-tables-map-seat-order-total {
+  flex-shrink: 0;
+  max-width: 48%;
+  font-size: 11px;
+  font-weight: var(--vl-font-weight-bold);
+  color: #92400e;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.restaurant-tables-map-seat-reservation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  max-width: 100%;
+  margin-top: 8px;
+  padding: 5px 8px;
+  border-radius: 8px;
+  background: rgba(59, 130, 246, 0.12);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.restaurant-tables-map-seat-reservation-icon {
+  flex-shrink: 0;
+  font-size: 12px;
+  color: #2563eb;
+}
+
+.restaurant-tables-map-seat-reservation-text {
+  min-width: 0;
+  font-size: 11px;
+  font-weight: var(--vl-font-weight-bold);
+  color: #1d4ed8;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .restaurant-tables-comanda-footer {

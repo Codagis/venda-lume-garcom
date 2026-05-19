@@ -1,19 +1,16 @@
-import { Button, Typography } from 'antd'
+import { Button } from 'antd'
 import { LogoutOutlined, UserOutlined } from '@ant-design/icons'
 import { useAuth } from '../contexts/AuthContext'
 import { confirmLogoutModal } from '../utils/confirmModal'
 import { useNavigate } from 'react-router-dom'
-
-const { Text } = Typography
+import brandMarkUrl from '../assets/images/Vector (1).svg'
+import brandWordmarkUrl from '../assets/images/vendalume.svg'
 
 export default function GarcomLayout({ children }) {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
 
-  const loginPath = `${process.env.PUBLIC_URL || ''}/login`
-
   const handleLogout = () => {
-    console.log('handleLogout')
     confirmLogoutModal({
       onOk: () => {
         logout()
@@ -26,12 +23,13 @@ export default function GarcomLayout({ children }) {
     <div className="garcom-layout">
       <header className="garcom-layout-header">
         <div className="garcom-layout-brand">
-          <span className="garcom-layout-logo">VL</span>
+          <div className="garcom-layout-brand-logos">
+            <img src={brandMarkUrl} alt="" className="garcom-layout-brand-mark" aria-hidden />
+            <img src={brandWordmarkUrl} alt="VendaLume" className="garcom-layout-brand-wordmark" />
+          </div>
           <div>
             <div className="garcom-layout-title">Garçom</div>
-            <Text type="secondary" className="garcom-layout-sub">
-              Mesas e comandas
-            </Text>
+            <span className="garcom-layout-sub">Mesas e comandas</span>
           </div>
         </div>
         <div className="garcom-layout-user">

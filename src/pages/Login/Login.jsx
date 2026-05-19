@@ -1,10 +1,10 @@
 import { useState } from 'react'
-import { Form, Input, Button, Card, Typography, Alert } from 'antd'
-import { CoffeeOutlined, LockOutlined, UserOutlined } from '@ant-design/icons'
+import { Form, Input, Button, Alert } from 'antd'
+import { LockOutlined, UserOutlined } from '@ant-design/icons'
 import { useAuth } from '../../contexts/AuthContext'
 import { useLocation, useNavigate } from 'react-router-dom'
-
-const { Title, Paragraph } = Typography
+import logoUrl from '../../assets/images/logo.svg'
+import './Login.css'
 
 export default function Login() {
   const { login } = useAuth()
@@ -18,7 +18,7 @@ export default function Login() {
     setError(null)
     setSubmitting(true)
     try {
-      await login({ username: values.username, password: values.password })
+      await login({ username: values.username.trim(), password: values.password })
       navigate(from, { replace: true })
     } catch (e) {
       setError(e?.message || 'Não foi possível entrar.')
@@ -28,43 +28,49 @@ export default function Login() {
   }
 
   return (
-    <div className="garcom-login-page">
-      <div className="garcom-login-inner">
-        <div className="garcom-login-hero">
-          <div className="garcom-login-icon-wrap">
-            <CoffeeOutlined className="garcom-login-icon" />
-          </div>
-          <Title level={3} className="garcom-login-title">
-            VendaLume Garçom
-          </Title>
-          <Paragraph type="secondary" className="garcom-login-desc">
-            Entre com o mesmo usuário do VendaLume. Apenas contas com permissão em <strong>Mesas do Restaurante</strong>{' '}
-            podem acessar este app.
-          </Paragraph>
-        </div>
+    <div className="login-page">
+      <div className="login-backdrop" aria-hidden="true" />
+      <div className="login-container">
+        <div className="login-card">
+          <header className="login-header">
+            <div className="login-brand">
+              <img src={logoUrl} alt="VendaLume" className="login-logo" width={280} height={48} />
+            </div>
+            <p className="login-subtitle">
+              Garçom · Mesas e comandas. Use o mesmo usuário do VendaLume (permissão em{' '}
+              <strong>Mesas do Restaurante</strong>).
+            </p>
+          </header>
 
-        <Card className="garcom-login-card" bordered={false}>
           {error && (
-            <Alert type="error" message={error} showIcon style={{ marginBottom: 16 }} closable onClose={() => setError(null)} />
+            <Alert type="error" message={error} showIcon closable onClose={() => setError(null)} style={{ marginBottom: 16 }} />
           )}
-          <Form layout="vertical" onFinish={onFinish} requiredMark={false} size="large">
-            <Form.Item name="username" label="Usuário" rules={[{ required: true, message: 'Informe o usuário' }]}>
-              <Input prefix={<UserOutlined className="garcom-input-icon" />} placeholder="Usuário" autoComplete="username" />
+
+          <Form layout="vertical" onFinish={onFinish} requiredMark={false} size="large" className="login-form">
+            <Form.Item
+              name="username"
+              rules={[
+                { required: true, message: 'Informe o usuário.' },
+                { whitespace: true, message: 'Usuário inválido.' },
+              ]}
+            >
+              <Input prefix={<UserOutlined className="login-input-icon" />} placeholder="Usuário" autoComplete="username" autoFocus />
             </Form.Item>
-            <Form.Item name="password" label="Senha" rules={[{ required: true, message: 'Informe a senha' }]}>
+            <Form.Item name="password" rules={[{ required: true, message: 'Informe a senha.' }]}>
               <Input.Password
-                prefix={<LockOutlined className="garcom-input-icon" />}
+                prefix={<LockOutlined className="login-input-icon" />}
                 placeholder="Senha"
                 autoComplete="current-password"
               />
             </Form.Item>
-            <Form.Item style={{ marginBottom: 0 }}>
-              <Button type="primary" htmlType="submit" loading={submitting} block size="large">
+            <Form.Item className="login-submit-item">
+              <Button type="primary" htmlType="submit" loading={submitting} block className="login-submit-btn">
                 Entrar
               </Button>
             </Form.Item>
           </Form>
-        </Card>
+          <p className="login-footer">© VendaLume Garçom · Acesso restrito</p>
+        </div>
       </div>
     </div>
   )

@@ -1,5 +1,4 @@
 ﻿
-
 .garcom-restaurant-tables-page {
   padding-bottom: env(safe-area-inset-bottom, 0);
 }
@@ -8,124 +7,228 @@
   padding-bottom: 8px;
 }
 
-
-.garcom-mobile-tabs-shell {
-  position: relative;
+.garcom-restaurant-tables-page .restaurant-tables-container {
+  padding-top: 4px;
 }
 
-
-.garcom-tabs-mini-menu-mode .ant-tabs-nav {
-  display: none !important;
+.garcom-restaurant-tables-page .restaurant-tables-header-card {
+  margin-top: 0;
+  margin-bottom: 28px;
 }
 
-.garcom-tabs-mini-menu-mode.ant-tabs-top > .ant-tabs-content-holder {
-  padding-bottom: calc(72px + env(safe-area-inset-bottom, 12px));
+/* Navegação por áreas (substitui abas e menu inferior) */
+.garcom-section-nav {
+  margin-bottom: 20px;
 }
 
-
-.garcom-mini-menu-wrap {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 100;
-  padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px));
-  background: rgba(255, 255, 255, 0.94);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-  border-top: 1px solid #e2e8f0;
-  box-shadow: 0 -8px 32px rgba(15, 23, 42, 0.08);
+.garcom-section-nav-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
 }
 
-.garcom-mini-menu {
-  display: flex;
-  align-items: stretch;
-  justify-content: space-between;
-  gap: 6px;
-  max-width: 520px;
-  margin: 0 auto;
-}
-
-.garcom-mini-menu-item {
-  flex: 1 1 0;
+.garcom-section-nav-list-item {
+  margin: 0;
   min-width: 0;
+}
+
+.garcom-section-nav-item {
+  width: 100%;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  padding: 8px 4px 6px;
-  border: none;
-  border-radius: 14px;
-  background: transparent;
-  color: #64748b;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  text-align: left;
+  border: 1px solid #e4e7ec;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #1d2939;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transition:
+    border-color 0.2s ease,
     background 0.2s ease,
-    color 0.2s ease,
+    box-shadow 0.2s ease,
     transform 0.15s ease;
 }
 
-.garcom-mini-menu-item:active {
-  transform: scale(0.96);
+.garcom-section-nav-item:hover {
+  border-color: #c9d0db;
+  background: #fafbfc;
 }
 
-.garcom-mini-menu-item-icon {
+.garcom-section-nav-item:active {
+  transform: scale(0.99);
+}
+
+.garcom-section-nav-item--active {
+  border-color: #1a4a2f;
+  background: linear-gradient(180deg, #f8fbf9 0%, #f3f8f5 100%);
+  box-shadow: 0 0 0 1px rgba(26, 74, 47, 0.14);
+}
+
+.garcom-section-nav-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  background: #f2f4f7;
+  color: #64748b;
   font-size: 20px;
-  line-height: 1;
-  color: inherit;
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
-.garcom-mini-menu-item-label {
-  font-size: 10px;
-  font-weight: 600;
-  line-height: 1.15;
-  letter-spacing: -0.02em;
-  text-align: center;
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.garcom-section-nav-item--active .garcom-section-nav-icon {
+  background: rgba(26, 74, 47, 0.12);
+  color: #1a4a2f;
 }
 
-.garcom-mini-menu-item--active {
-  background: linear-gradient(180deg, rgba(13, 148, 136, 0.12) 0%, rgba(13, 148, 136, 0.06) 100%);
-  color: #0d9488;
+.garcom-section-nav-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
 }
 
-.garcom-mini-menu-item--active .garcom-mini-menu-item-icon {
-  color: #0d9488;
+.garcom-section-nav-title {
+  font-size: 14px;
+  font-weight: var(--vl-font-weight-bold);
+  color: #1d2939;
+  line-height: 1.25;
 }
 
+.garcom-section-nav-desc {
+  font-size: 12px;
+  font-weight: var(--vl-font-weight-regular);
+  color: #667085;
+  line-height: 1.35;
+}
+
+.garcom-section-nav-item--active .garcom-section-nav-title {
+  color: #153f28;
+}
+
+/* Painel do conteúdo da seção ativa */
+.garcom-section-panel {
+  background: #ffffff;
+  border: 1px solid #e4e7ec;
+  border-radius: 12px;
+  padding: 20px 22px 24px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+}
+
+.garcom-section-tabs.restaurant-tables-tabs {
+  margin-bottom: 0;
+}
+
+.garcom-section-tabs .ant-tabs-nav {
+  display: none !important;
+}
+
+.garcom-section-tabs .ant-tabs-content-holder {
+  padding: 0;
+  border: none;
+}
+
+.garcom-section-tabs .ant-tabs-tabpane {
+  padding: 0;
+}
+
+@media (max-width: 991px) {
+  .garcom-section-nav-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .garcom-section-nav-item {
+    padding: 12px 14px;
+  }
+
+  .garcom-section-nav-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
+}
 
 @media (max-width: 767px) {
+  .garcom-restaurant-tables-page .restaurant-tables-map-container {
+    padding: 14px;
+    border-radius: 14px;
+  }
+
   .garcom-restaurant-tables-page .restaurant-tables-map-grid {
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 12px;
+    grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
+    gap: 10px;
   }
 
-  .garcom-restaurant-tables-page .restaurant-tables-map-card {
-    min-height: 96px;
-    border-radius: 16px;
+  .garcom-restaurant-tables-page .restaurant-tables-map-seat {
+    padding: 10px 8px 8px;
   }
 
-  .garcom-restaurant-tables-page .restaurant-tables-map-card-name {
-    font-size: 1rem;
+  .garcom-restaurant-tables-page .restaurant-tables-map-seat-surface {
+    width: 46px;
+    height: 30px;
+  }
+
+  .garcom-restaurant-tables-page .restaurant-tables-map-seat-name {
+    font-size: 14px;
+  }
+
+  .garcom-restaurant-tables-page .restaurant-tables-map-seat-order {
+    flex-wrap: wrap;
+    row-gap: 2px;
+  }
+
+  .garcom-restaurant-tables-page .restaurant-tables-map-seat-order-total {
+    max-width: 100%;
+    flex: 1 1 100%;
+    text-align: center;
   }
 
   .garcom-restaurant-tables-page .restaurant-tables-header-card {
     flex-direction: column;
     align-items: flex-start;
+    margin-bottom: 24px;
   }
 
   .garcom-restaurant-tables-page .restaurant-tables-container {
-    padding-left: 12px;
-    padding-right: 12px;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .garcom-section-panel {
+    padding: 16px 14px 20px;
+    border-radius: 12px;
+  }
+
+  .garcom-section-nav {
+    margin-bottom: 16px;
+  }
+
+  .garcom-section-nav-desc {
+    display: none;
+  }
+
+  .garcom-section-nav-item {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 8px;
+    padding: 12px 8px;
+  }
+
+  .garcom-section-nav-text {
+    align-items: center;
+  }
+
+  .garcom-section-nav-title {
+    font-size: 13px;
   }
 }

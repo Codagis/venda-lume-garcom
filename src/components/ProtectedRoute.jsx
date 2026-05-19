@@ -14,7 +14,7 @@ export function ProtectedRoute({ children }) {
           justifyContent: 'center',
           alignItems: 'center',
           minHeight: '100vh',
-          background: 'linear-gradient(165deg, #ecfdf5 0%, #f8fafc 45%, #fff 100%)',
+          background: '#f4f1e8',
         }}
       >
         <Spin size="large" />

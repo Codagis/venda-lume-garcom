@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import {
   Form,
   Input,
@@ -82,16 +82,132 @@ const RESERVATION_STATUS_OPTIONS = [
   { value: 'NO_SHOW', label: 'Não compareceu', color: 'default' },
 ]
 
-const GARCOM_MOBILE_TABS = [
-  { key: 'sections', title: 'Seções', Icon: TeamOutlined },
-  { key: 'map', title: 'Mapa', Icon: DashboardOutlined },
-  { key: 'tables', title: 'Mesas', Icon: TableOutlined },
-  { key: 'reservations', title: 'Reservas', Icon: CalendarOutlined },
+const GARCOM_SECTIONS = [
+  { key: 'map', title: 'Mapa do salão', description: 'Visão das mesas e comandas', Icon: DashboardOutlined },
+  { key: 'sections', title: 'Seções', description: 'Áreas e ambientes', Icon: TeamOutlined },
+  { key: 'tables', title: 'Mesas', description: 'Cadastro e capacidade', Icon: TableOutlined },
+  { key: 'reservations', title: 'Reservas', description: 'Agenda e confirmações', Icon: CalendarOutlined },
 ]
+
+function GarcomSectionNav({ sections, activeKey, onChange }) {
+  return (
+    <nav className="garcom-section-nav" aria-label="Áreas do restaurante">
+      <ul className="garcom-section-nav-list">
+        {sections.map(({ key, title, description, Icon }) => {
+          const active = activeKey === key
+          return (
+            <li key={key} className="garcom-section-nav-list-item">
+              <button
+                type="button"
+                className={`garcom-section-nav-item${active ? ' garcom-section-nav-item--active' : ''}`}
+                onClick={() => onChange(key)}
+                aria-current={active ? 'page' : undefined}
+              >
+                <span className="garcom-section-nav-icon" aria-hidden>
+                  <Icon />
+                </span>
+                <span className="garcom-section-nav-text">
+                  <span className="garcom-section-nav-title">{title}</span>
+                  <span className="garcom-section-nav-desc">{description}</span>
+                </span>
+              </button>
+            </li>
+          )
+        })}
+      </ul>
+    </nav>
+  )
+}
 
 function formatDateTime(val) {
   if (!val) return '-'
   return dayjs(val).format('DD/MM/YYYY HH:mm')
+}
+
+function getOrderTotals(order) {
+  const items = order?.items || []
+  let count = 0
+  let total = 0
+  for (const item of items) {
+    const q = Number(item.quantity) || 0
+    count += q
+    total += q * (Number(item.unitPrice) || 0)
+  }
+  return { count, total }
+}
+
+const MAP_STATUS_LABELS = {
+  available: 'Disponível',
+  occupied: 'Ocupada',
+  reserved: 'Reservada',
+}
+
+function TableMapSeat({ table, order, reservation, onOpen, formatPrice }) {
+  const isOccupied = Boolean(order) || table.status === 'OCCUPIED'
+  const isReserved = table.status === 'RESERVED' || reservation
+  const status = isOccupied ? 'occupied' : isReserved ? 'reserved' : 'available'
+  const { count, total } = order ? getOrderTotals(order) : { count: 0, total: 0 }
+  const reservationTime = reservation ? dayjs(reservation.scheduledAt).format('HH:mm') : null
+
+  return (
+    <button
+      type="button"
+      className={`restaurant-tables-map-seat restaurant-tables-map-seat--${status}`}
+      onClick={onOpen}
+      aria-label={`${table.name}, ${table.capacity} lugares, ${MAP_STATUS_LABELS[status]}`}
+    >
+      <span className={`restaurant-tables-map-seat-status-dot restaurant-tables-map-seat-status-dot--${status}`} aria-hidden />
+      <span className="restaurant-tables-map-seat-visual" aria-hidden>
+        <span className="restaurant-tables-map-seat-surface" />
+      </span>
+      <span className="restaurant-tables-map-seat-name">{table.name}</span>
+      <span className="restaurant-tables-map-seat-meta">{table.capacity} lugares</span>
+      {order && (
+        <span className="restaurant-tables-map-seat-order" title={order.id ? `Comanda ${order.id}` : undefined}>
+          <ShoppingCartOutlined className="restaurant-tables-map-seat-order-icon" aria-hidden />
+          <span className="restaurant-tables-map-seat-order-count">
+            {count > 0 ? `${count} ${count === 1 ? 'item' : 'itens'}` : 'Comanda aberta'}
+          </span>
+          {total > 0 && (
+            <span className="restaurant-tables-map-seat-order-total">{formatPrice(total)}</span>
+          )}
+        </span>
+      )}
+      {isReserved && !order && (
+        <span className="restaurant-tables-map-seat-reservation">
+          <CalendarOutlined className="restaurant-tables-map-seat-reservation-icon" aria-hidden />
+          <span className="restaurant-tables-map-seat-reservation-text">
+            Reserva{reservationTime ? ` · ${reservationTime}` : ''}
+          </span>
+        </span>
+      )}
+    </button>
+  )
+}
+
+function buildMapZones(tableList, sections) {
+  const bySection = new Map()
+  for (const table of tableList) {
+    const key = table.sectionId || '__none__'
+    if (!bySection.has(key)) bySection.set(key, [])
+    bySection.get(key).push(table)
+  }
+
+  const sectionIndex = new Map(sections.map((s, i) => [s.id, i]))
+  const keys = [...bySection.keys()].sort((a, b) => {
+    if (a === '__none__') return 1
+    if (b === '__none__') return -1
+    const ai = sectionIndex.has(a) ? sectionIndex.get(a) : 999
+    const bi = sectionIndex.has(b) ? sectionIndex.get(b) : 999
+    return ai - bi
+  })
+
+  return keys.map((key) => {
+    const list = bySection.get(key) || []
+    const fromSection = sections.find((s) => s.id === key)
+    const name = fromSection?.name || list[0]?.sectionName || (key === '__none__' ? 'Sem seção' : 'Salão')
+    return { id: key, name, tables: list }
+  })
 }
 
 function CloseOrderPayNowForm({ form, currentOrder, tenantConfig, cardMachines, formatPrice, onFinish, closingOrder }) {
@@ -287,7 +403,7 @@ export default function RestaurantTables() {
 
   const [tenants, setTenants] = useState([])
   const [selectedTenantId, setSelectedTenantId] = useState(null)
-  const [activeTab, setActiveTab] = useState('sections')
+  const [activeTab, setActiveTab] = useState('map')
 
   const [sections, setSections] = useState([])
   const [tables, setTables] = useState([])
@@ -957,6 +1073,21 @@ export default function RestaurantTables() {
 
   const formatPrice = (v) => (v != null ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v) : 'R$ 0,00')
 
+  const mapTablesList = useMemo(
+    () =>
+      (mapSectionId ? tables.filter((t) => t.sectionId === mapSectionId) : tables)
+        .filter((t) => t.active !== false)
+        .sort((a, b) => {
+          const ap = a.positionY != null && a.positionX != null ? a.positionY * 100 + a.positionX : 9999
+          const bp = b.positionY != null && b.positionX != null ? b.positionY * 100 + b.positionX : 9999
+          if (ap !== bp) return ap - bp
+          return String(a.name || '').localeCompare(String(b.name || ''), 'pt-BR')
+        }),
+    [tables, mapSectionId],
+  )
+
+  const mapZones = useMemo(() => buildMapZones(mapTablesList, sections), [mapTablesList, sections])
+
   const sectionColumns = [
     { title: 'Nome', dataIndex: 'name', key: 'name', width: 200 },
     { title: 'Descrição', dataIndex: 'description', key: 'description', ellipsis: true },
@@ -1113,13 +1244,14 @@ export default function RestaurantTables() {
             </div>
           )}
 
-          <div className={isMobile ? 'garcom-mobile-tabs-shell' : ''}>
+          <GarcomSectionNav sections={GARCOM_SECTIONS} activeKey={activeTab} onChange={setActiveTab} />
+
+          <div className="garcom-section-panel">
           <Tabs
             activeKey={activeTab}
             onChange={setActiveTab}
-            tabPosition="top"
-            tabBarStyle={isMobile ? { display: 'none' } : undefined}
-            className={`restaurant-tables-tabs${isMobile ? ' garcom-tabs-mini-menu-mode' : ''}`}
+            renderTabBar={() => null}
+            className="restaurant-tables-tabs garcom-section-tabs"
             items={[
               {
                 key: 'sections',
@@ -1269,48 +1401,42 @@ export default function RestaurantTables() {
                     </div>
                     <div className="restaurant-tables-map-container">
                       {loading ? (
-                        <div className="restaurant-tables-map-loading">Carregando mesas...</div>
+                        <div className="restaurant-tables-map-loading">Carregando mapa do salão…</div>
+                      ) : mapTablesList.length === 0 ? (
+                        <div className="restaurant-tables-map-empty">Nenhuma mesa ativa neste filtro.</div>
                       ) : (
-                        <div className="restaurant-tables-map-grid">
-                          {(mapSectionId
-                            ? tables.filter((t) => t.sectionId === mapSectionId)
-                            : tables
-                          )
-                            .filter((t) => t.active !== false)
-                            .sort((a, b) => {
-                              const ap = a.positionY != null && a.positionX != null ? a.positionY * 100 + a.positionX : 9999
-                              const bp = b.positionY != null && b.positionX != null ? b.positionY * 100 + b.positionX : 9999
-                              return ap - bp
-                            })
-                            .map((t) => {
-                              const order = getOrderForTable(t.id)
-                              const reservation = getReservationForTable(t.id)
-                              const isOccupied = order || t.status === 'OCCUPIED'
-                              const isReserved = t.status === 'RESERVED' || reservation
-                              return (
-                                <div
-                                  key={t.id}
-                                  className={`restaurant-tables-map-card ${isOccupied ? 'occupied' : ''} ${isReserved ? 'reserved' : ''}`}
-                                  onClick={() => openOrderDrawer(t)}
-                                >
-                                  <div className="restaurant-tables-map-card-inner">
-                                    <span className="restaurant-tables-map-card-name">{t.name}</span>
-                                    <span className="restaurant-tables-map-card-capacity">{t.capacity} lugares</span>
-                                    {order && (
-                                      <Tag color="orange" style={{ marginTop: 4 }}>
-                                        Comanda #{String(order.id).slice(0, 8)}
-                                      </Tag>
-                                    )}
-                                    {isReserved && !order && (
-                                      <Tag color="blue" style={{ marginTop: 4 }}>
-                                        Reservada{reservation ? ` · ${dayjs(reservation.scheduledAt).format('HH:mm')}` : ''}
-                                      </Tag>
-                                    )}
-                                  </div>
-                                </div>
-                              )
-                            })}
-                        </div>
+                        <>
+                          <div className="restaurant-tables-map-legend" aria-label="Legenda do mapa">
+                            {(['available', 'occupied', 'reserved']).map((key) => (
+                              <span key={key} className="restaurant-tables-map-legend-item">
+                                <span className={`restaurant-tables-map-legend-dot restaurant-tables-map-legend-dot--${key}`} />
+                                {MAP_STATUS_LABELS[key]}
+                              </span>
+                            ))}
+                          </div>
+                          {mapZones.map((zone) => (
+                            <section key={zone.id} className="restaurant-tables-map-zone">
+                              <header className="restaurant-tables-map-zone-header">
+                                <h3 className="restaurant-tables-map-zone-title">{zone.name}</h3>
+                                <span className="restaurant-tables-map-zone-count">
+                                  {zone.tables.length} {zone.tables.length === 1 ? 'mesa' : 'mesas'}
+                                </span>
+                              </header>
+                              <div className="restaurant-tables-map-grid">
+                                {zone.tables.map((t) => (
+                                  <TableMapSeat
+                                    key={t.id}
+                                    table={t}
+                                    order={getOrderForTable(t.id)}
+                                    reservation={getReservationForTable(t.id)}
+                                    onOpen={() => openOrderDrawer(t)}
+                                    formatPrice={formatPrice}
+                                  />
+                                ))}
+                              </div>
+                            </section>
+                          ))}
+                        </>
                       )}
                     </div>
                   </>
@@ -1521,30 +1647,6 @@ export default function RestaurantTables() {
               },
             ]}
           />
-          {isMobile && (
-            <nav className="garcom-mini-menu-wrap" aria-label="Funções do restaurante">
-              <div className="garcom-mini-menu">
-                {GARCOM_MOBILE_TABS.map(({ key, title, Icon }) => {
-                  const active = activeTab === key
-                  return (
-                    <button
-                      key={key}
-                      type="button"
-                      role="tab"
-                      aria-selected={active}
-                      className={`garcom-mini-menu-item${active ? ' garcom-mini-menu-item--active' : ''}`}
-                      onClick={() => setActiveTab(key)}
-                    >
-                      <span className="garcom-mini-menu-item-icon" aria-hidden>
-                        <Icon />
-                      </span>
-                      <span className="garcom-mini-menu-item-label">{title}</span>
-                    </button>
-                  )
-                })}
-              </div>
-            </nav>
-          )}
           </div>
         </div>
       </main>

@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useCallback, useEffect } from 'react'
 import { login as apiLogin, fetchMe, logoutApi } from '../services/api'
+import { hasStoredSession } from '../auth/authStorage'
 import { listModules } from '../services/moduleService'
 
 const AuthContext = createContext(null)
@@ -18,6 +19,12 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
 
   const loadSession = useCallback(async () => {
+    if (!hasStoredSession()) {
+      setUser(null)
+      setIsAuthenticated(false)
+      setLoading(false)
+      return
+    }
     try {
       const me = await fetchMe()
       if (me) {

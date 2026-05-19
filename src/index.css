@@ -5,11 +5,16 @@
 }
 
 :root {
-  /*
-    Escala global da UI (para “tirar o zoom” e deixar tudo menor).
-    Ajuste aqui: 0.92, 0.90, 0.88...
-  */
-  --vl-ui-scale: 0.8;
+  --vl-ui-scale: 1;
+  --vl-brand: #1a4a2f;
+  --vl-brand-hover: #235a38;
+  --vl-brand-dark: #153f28;
+  --vl-brand-light: #e6ede8;
+  --vl-brand-soft: #d1e0d6;
+  --vl-font-family: 'Sora', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
+    Cantarell, sans-serif;
+  --vl-font-weight-regular: 300;
+  --vl-font-weight-bold: 700;
 }
 
 html {
@@ -20,16 +25,26 @@ html {
 /* Com `zoom` (< 1), `100vh` fica visualmente menor. Compensa altura das telas principais. */
 @supports (zoom: 1) {
   .garcom-layout,
-  .garcom-login-page {
+  .login-page {
     min-height: calc(100vh / var(--vl-ui-scale));
   }
 }
 
 body {
-  font-family: 'Urbanist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  font-family: var(--vl-font-family);
+  font-weight: var(--vl-font-weight-regular);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background: #f8fafc;
+}
+
+b,
+strong,
+.ant-typography strong,
+.ant-btn-primary,
+.ant-table-thead > tr > th,
+.ant-form-item-label > label {
+  font-weight: var(--vl-font-weight-bold) !important;
 }
 
 /* Fallback para navegadores sem suporte a `zoom` */
@@ -169,18 +184,27 @@ body {
   min-width: 0;
 }
 
-.garcom-layout-logo {
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%);
-  color: #fff;
-  font-weight: 800;
-  font-size: 14px;
+.garcom-layout-brand-logos {
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 10px;
   flex-shrink: 0;
+}
+
+.garcom-layout-brand-mark {
+  display: block;
+  height: 36px;
+  width: auto;
+  object-fit: contain;
+}
+
+.garcom-layout-brand-wordmark {
+  display: block;
+  height: 24px;
+  width: auto;
+  max-width: 140px;
+  object-fit: contain;
+  object-position: left center;
 }
 
 .garcom-layout-title {
@@ -191,9 +215,11 @@ body {
 }
 
 .garcom-layout-sub {
-  font-size: 12px !important;
+  font-size: 12px;
   display: block;
-  margin-top: 2px !important;
+  margin-top: 2px;
+  color: #64748b;
+  font-weight: var(--vl-font-weight-regular);
 }
 
 .garcom-layout-user {
@@ -222,59 +248,13 @@ body {
 .garcom-layout-body {
   flex: 1;
   min-height: 0;
+  padding: 24px 24px 32px;
+  background: #f8fafc;
 }
 
-/* Login */
-.garcom-login-page {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px 16px 32px;
+@media (max-width: 767px) {
+  .garcom-layout-body {
+    padding: 20px 16px 24px;
+  }
 }
 
-.garcom-login-inner {
-  width: 100%;
-  max-width: 420px;
-}
-
-.garcom-login-hero {
-  text-align: center;
-  margin-bottom: 24px;
-}
-
-.garcom-login-icon-wrap {
-  width: 64px;
-  height: 64px;
-  margin: 0 auto 16px;
-  border-radius: 20px;
-  background: linear-gradient(135deg, rgba(13, 148, 136, 0.15) 0%, rgba(20, 184, 166, 0.12) 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.garcom-login-icon {
-  font-size: 32px;
-  color: #0d9488;
-}
-
-.garcom-login-title.ant-typography {
-  margin-bottom: 8px !important;
-  color: #0f172a !important;
-}
-
-.garcom-login-desc {
-  margin-bottom: 0 !important;
-  font-size: 15px;
-  line-height: 1.5;
-}
-
-.garcom-login-card {
-  border-radius: 20px !important;
-  box-shadow: 0 12px 40px rgba(15, 23, 42, 0.08) !important;
-}
-
-.garcom-input-icon {
-  color: #94a3b8;
-}
